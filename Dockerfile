@@ -1,25 +1,21 @@
 FROM ghcr.io/linuxserver/baseimage-kasmvnc:ubuntujammy
 
-LABEL maintainer="gitxpresso"
-LABEL org.opencontainers.image.source "https://github.com/gitxpresso/browsers-novnc"
+LABEL maintainer="getsentrix"
+LABEL org.opencontainers.image.source "https://github.com/getsentrix/novncbrave"
 
-ENV TITLE=Lutris
+ENV TITLE=Brave
 
-RUN \
-  echo "**** add icon ****" && \
-  curl -o /kclient/public/icon.png \
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Lutris_Game_Platform_%28Logo%29.svg/256px-Lutris_Game_Platform_%28Logo%29.svg.png?20190914235349" && \
-  apt-get update && \
-  sudo dpkg --add-architecture i386 && \
-  apt-get update && \
-  apt install --no-install-recommends -y curl gnupg wget libc6-i386 libc6-dev  libgl1:i386 libdrm2:i386 libgtk2.0-0 libdbus-glib-1-2 dbus-x11 && \
-  wget "https://github.com/lutris/lutris/releases/download/v0.5.18/lutris_0.5.18_all.deb" && \
-  sudo apt install -y ./lutris_0.5.18_all.deb && \
-  sudo rm -rf lutris_0.5.18_all.deb && \
-  apt-get autoclean && \
-  rm -rf /config/.cache /var/lib/apt/lists/* /var/tmp/* /tmp/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    wget \
+    gnupg \
+    dbus-x11 && \
+    curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-release.list && \
+    apt-get update && \
+    apt-get install -y brave-browser && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /config/.cache
 
 EXPOSE 3000
-
-# Comment or remove VOLUME for Railway deployment
-# VOLUME /config
