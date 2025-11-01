@@ -13,11 +13,13 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y brave-browser && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /config/.cache && \
-    mkdir -p /etc/services.d/brave && \
-    echo '#!/command/with-contenv bash' > /etc/services.d/brave/run && \
-    echo 'export DISPLAY=:1' >> /etc/services.d/brave/run && \
-    echo 'exec s6-setuidgid abc brave-browser --no-sandbox --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --homepage=https://google.com' >> /etc/services.d/brave/run && \
-    chmod +x /etc/services.d/brave/run
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /config/.cache
+
+# Correct s6 service that autolaunches Brave
+RUN mkdir -p /etc/services.d/brave \
+ && echo '#!/usr/bin/env bash' > /etc/services.d/brave/run \
+ && echo 'export DISPLAY=:1' >> /etc/services.d/brave/run \
+ && echo 'exec s6-setuidgid abc brave-browser --no-sandbox --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --homepage=https://google.com' >> /etc/services.d/brave/run \
+ && chmod +x /etc/services.d/brave/run
 
 EXPOSE 3000
