@@ -18,4 +18,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /config/.cache
 
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 EXPOSE 3000
+
+CMD ["/start.sh"]
